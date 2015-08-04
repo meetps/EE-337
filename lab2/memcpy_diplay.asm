@@ -69,6 +69,7 @@ MOV R0,51H    ; read P from 51H
 MOV R2,50H	  ; read N fron 50H
 MOV R3,#01H
 MOV @R0,#01
+DEC R2
 ; get sumOfSquares till i 
 squareStoreLoop :
 		   CLR A
@@ -94,6 +95,12 @@ memcpy :
 MOV R0, 51H		; read A from 51H
 MOV R1, 52H		; read B from 52H
 MOV R2, 50H		; read N from 50H
+CLR C
+MOV A,R0
+SUBB A,R1
+
+JC overlapCopy
+
 copyLoop :      ; copy N locations consecutively from A to B
 		   MOV A,@R0
 		   MOV @R1,A
@@ -102,7 +109,22 @@ copyLoop :      ; copy N locations consecutively from A to B
 		   DJNZ R2, copyLoop
 RET
 
-
+overlapCopy :
+			MOV A,R0
+			ADD A,R2
+			MOV R0,A
+			MOV A,R1
+			ADD A,R2
+			MOV R1,A
+			DEC R1
+			DEC R0
+overlapCopyLoop :
+			MOV A,@R0
+		   MOV @R1,A
+		   DEC R0
+		   DEC R1
+		   DJNZ R2, overlapCopyLoop
+RET
 
 ;-----------------------------------------
 ; Main 
