@@ -13,7 +13,7 @@ PUSH AR3
 PUSH AR4
 PUSH AR5
 CLR A
-MOV A,4FH ; get D from 4FH
+MOV A,4AH ; get D from 4FH
 MOV B,#0AH
 MUL AB ; Mul by 10 as (d/2)s = 50*Dms     
 MOV R3,A  ; Mov the loop parameter to R3
