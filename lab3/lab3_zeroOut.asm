@@ -24,7 +24,10 @@ zeroOut :
 	PUSH AR0
 	PUSH AR1
 	LCALL readNibble
-	MOV R1,A 	
+	MOV R1,A
+	MOV P1,#00H
+	SWAP A
+	MOV P1,A 	
 	MOV R0, 51H   ; read from 51H
 	eraseLoop : MOV @R0,#00H  ; clear from P to P + N -1
 				INC R0        ; increment R2

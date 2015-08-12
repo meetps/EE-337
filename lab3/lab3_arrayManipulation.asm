@@ -1,3 +1,4 @@
+;======================MAIN====================
 ORG 0000H
 
 LJMP MAIN
@@ -95,6 +96,35 @@ readValues:
 	POP AR0
 	POP AR1
 	RET
+	
+displayValues:
+	CLR PSW.7
+	MOV P1, #0FH
+	NOP
+	MOV A, P1
+	SUBB A, 50H
+	JNC Invalid
+	MOV P1, #0FH
+	MOV A, P1
+	ADD A, 51H
+	MOV R0, A
+	MOV A, @R0
+	ANL A, #0F0H
+	MOV P1, A
+	MOV 4AH, #04H;4S DELAY
+	LCALL delay
+	MOV A, @R0
+	ANL A, #0FH
+	SWAP A
+	MOV P1,A
+	MOV 4AH, #04H;4S DELAY
+	LCALL delay
+	SJMP displayValues
+	RET
+
+Invalid:
+	MOV P1, #00H
+	RET
 
 shuffleBits	:
 	USING 0
@@ -123,14 +153,27 @@ shuffleBits	:
 	MOV R1,51H
 	XRL A,@R1
 	MOV @R2,A
-	POP AR3
 	POP AR2
 	POP AR1
+	POP AR0
 	RET
 
-MAIN :
-MOV 50H,#50H				; Value of K
-MOV 51H,#60H				; Array A start location
-MOV 52H,#70H				; Array B start location
-LCALL shuffleBits			; Calling Function
+MAIN:
+
+MOV 60H,#01H
+MOV 61H,#02H
+MOV 62H,#03H
+MOV 63H,#04H
+MOV 64H,#05H
+
+MOV 50H,#04H;------------------------Value of K
+MOV 51H,#60H;------------------------Array A start location
+MOV 52H,#70H;------------------------Array B start location
+LCALL shuffleBits
+
+MOV 50H,#04H;------------------------Value of K
+MOV 51H,#70H;------------------------Array B start Location
+LCALL displayValues;----------------Display the last four bits of elements on LEDs
+here:SJMP here;---------------------WHILE loop(Infinite Loop)
 END
+; ------------------------------------END MAIN------------------------------------

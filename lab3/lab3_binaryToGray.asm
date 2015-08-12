@@ -14,15 +14,17 @@ bin2gray:
 	SWAP A  		;SWAP nibbles
 	ANL A,#0F0H		;AND with 11110000 to remove lwr nibble
 	MOV R1,A
-	RRC A
+	RR A
+	ANL A,#0F0H
 	XRL A,R1
 	ANL A,#0F0H
+	MOV P1,#00H
 	MOV P1,A
-	SJMP bin2gray	; Keep Looping
 	POP AR1
 RET
 
 MAIN :
+MOV P1,#0FH
 LCALL bin2gray ;calling the routine
 END
 

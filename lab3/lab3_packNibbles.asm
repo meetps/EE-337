@@ -38,24 +38,27 @@ readNibble:
 	USING 0
 	PUSH AR1
 	MOV P1,#00H			; Clearing the port
-	MOV P1,#0F0H		; All LEDs on to signal start
-	MOV 4AH,#0AH		; set the delay to 5s
-	LCALL delay
-	MOV P1,#00H
-	MOV A,P1
-	SWAP A
-	ANL A,#0F0H			; ANDing with 11110000 to get upper nibble
-	MOV R1,A
-	MOV 4AH,#02H		; set the delay to 1s
-	LCALL delay
-	MOV P1,A
-	MOV 4AH,#0AH		; set the delay to 5s
-	LCALL delay
-	MOV P1,#00H
-	MOV A,P1
-	SWAP A
-	ANL A,#0F0H
-	CJNE A, #00H, readNibble
+	inputLoop:
+		MOV P1,#0F0H		; All LEDs on to signal start
+		MOV 4AH,#0AH		; set the delay to 5s
+		LCALL delay
+		MOV P1,#0FH
+		NOP
+		MOV A,P1
+		SWAP A
+		ANL A,#0F0H			; ANDing with 11110000 to get upper nibble
+		MOV R1,A
+		MOV 4AH,#02H		; set the delay to 1s
+		LCALL delay
+		MOV A,R1
+		MOV P1,A
+		MOV 4AH,#0AH		; set the delay to 5s
+		LCALL delay
+		MOV P1,#0FH
+		NOP
+		MOV A,P1
+		ANL A,#0F0H
+		CJNE A, #00H, inputLoop
 	MOV 4EH,R1
 	POP AR1
 	RET					; Return to caller
@@ -79,4 +82,5 @@ packNibbles:
 	
 MAIN :
 LCALL packNibbles		; Calling Function
+STOP: JMP STOP
 END

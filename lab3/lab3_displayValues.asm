@@ -1,0 +1,65 @@
+ORG 0000H
+
+LJMP MAIN
+
+ORG 100H
+	
+delay :
+	USING 0
+	PUSH AR3
+	PUSH AR4
+	PUSH AR5
+	CLR A
+	MOV A,4AH ;value of d in 04Ah
+	MOV B,#0AH;10
+	MUL AB ; 10*50ms = 1/2 s 
+	MOV R3,A
+	delayLoop :
+				MOV R4,#200
+				BACK1: MOV R5,#0FFH	
+				BACK: DJNZ R5, BACK
+				DJNZ R4, BACK1
+				DJNZ R3, delayLoop
+	POP AR5
+	POP AR4
+	POP AR3
+	RET
+	
+displayValues:
+	CLR PSW.7
+	MOV P1, #0FH
+	NOP
+	MOV A, P1
+	SUBB A, 50H
+	JNC Invalid
+	MOV P1, #0FH
+	MOV A, P1
+	ADD A, 51H
+	MOV R0, A
+	MOV A, @R0
+	ANL A, #0F0H
+	MOV P1, A
+	MOV 4AH, #04H;4S DELAY
+	LCALL delay
+	MOV A, @R0
+	ANL A, #0FH
+	SWAP A
+	MOV P1,A
+	MOV 4AH, #04H;4S DELAY
+	LCALL delay
+	SJMP displayValues
+	RET
+
+Invalid:
+	MOV P1, #00H
+	RET
+	
+MAIN :
+MOV 50H, #04H ;K
+MOV 51H, #52H ;P
+MOV 52H, #47H
+MOV 55H, #13H
+MOV 59H, #22H
+LCALL displayValues
+STOP: JMP STOP	
+END
